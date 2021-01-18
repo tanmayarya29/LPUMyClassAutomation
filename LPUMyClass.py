@@ -169,8 +169,8 @@ def wishTeacher():
 def run():
     driver.maximize_window()
     def site_login():
-        driver.get("https://myclass.lpu.in/")
-        driver.get("https://myclass.lpu.in/")
+        driver.get("https://ums.lpu.in/myclass/")
+        driver.get("https://ums.lpu.in/myclass/")
         try:
             try:
                 rcnt = open("D:/captcha/count.txt", "r")
