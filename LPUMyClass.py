@@ -76,10 +76,10 @@ def jot(final_time):
     print(diff)
     if diff>-1 and diff<=70:
         print("You are late by "+str(diff)+" m.\nLets join...")
-        return 1
+        return 0
     elif diff>-1 and diff>70:
         print('Your class finished '+str(diff)+'m ago.')
-        return 0
+        return -1
     else:
         print('You have '+str(-diff)+' m to start the class.')
         return diff
@@ -200,6 +200,7 @@ def run():
         time.sleep(1)
         driver.find_element_by_link_text("View Classes/Meetings").click()
         time.sleep(1)
+        ################now--->
         a=[]
         links=[]
         b=[]
