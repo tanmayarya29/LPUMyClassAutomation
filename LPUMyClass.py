@@ -2,18 +2,16 @@
 import os
 try:
     from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
     from webdriver_manager.chrome import ChromeDriverManager
-    from selenium.webdriver.common.action_chains import ActionChains
-    from selenium.webdriver.common.keys import Keys
-    from selenium.common.exceptions import NoSuchElementException
+    from tkinter import Tk
+    from tkinter import simpledialog
+    import os
     import time
     import datetime
-    import tkinter as tk
-    from tkinter import simpledialog
-    import urllib
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.keys import Keys
 except:
     os.system('pip install selenium')
     os.system('pip install webdriver-manager')
@@ -22,26 +20,83 @@ except:
     os.system('pip install urllib3')
 finally:
     from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
     from webdriver_manager.chrome import ChromeDriverManager
-    from selenium.webdriver.common.action_chains import ActionChains
-    from selenium.webdriver.common.keys import Keys
-    from selenium.common.exceptions import NoSuchElementException
+    from tkinter import Tk
+    from tkinter import simpledialog
+    import os
     import time
     import datetime
-    import tkinter as tk
-    from tkinter import simpledialog
-    import urllib
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.keys import Keys
 
-
-usrnm=''
-pswd=''
-captcha=''
-clscount=0
-root=tk.Tk()
+root=Tk()
 driver = webdriver.Chrome(ChromeDriverManager().install())
+driver.maximize_window()
+
+def get_details():
+    global usrnm
+    global pswd
+    root.withdraw()
+    if os.path.isfile('login_up.txt'):
+        f=open('login_up.txt','r')
+        usrnm=f.readline()
+        pswd=f.readline()
+    else:
+        f=open('login_up.txt','w')
+        usrnm=simpledialog.askstring(title="Username",prompt="Enter the Username here:")
+        f.write("u-"+usrnm+"\n")
+        pswd=simpledialog.askstring(title="Password",prompt="Enter the Password here:")
+        f.write("p-"+pswd)
+        f.close()
+        f=open('login_up.txt','r')
+        usrnm=f.readline()
+        pswd=f.readline()
+        f.close()
+    
+    usrnm=usrnm[2:10]
+    pswd=pswd[2:]
+
+def poll():
+    try:
+        try: # //*[@id="frame"]
+            frame = WebDriverWait(driver,1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="frame"]')))
+            driver.switch_to.frame(frame)
+        except Exception as e: 
+            print("-",end="")
+        time.sleep(10)
+        try:
+            driver.find_element_by_xpath('//*[@id="app"]/main/div[2]/div/span/div[2]/div[1]/button').click()
+            print(" :)Polled!")
+        except:
+            print("Not Polled :-<")
+
+    except Exception as e:
+        print(".",end="")
+
+def wishTeacher():
+    now = datetime.datetime.now() 
+    if(now.minute <= 10):
+        if(now.hour<12):
+            wish="Good Morning"
+        elif(now.hour>=12 and now.hour<=16):
+            wish="Good Afternoon"
+        else:
+            wish="Good Evening"
+
+    try:
+        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'//*[@id="tippy-10"]')))
+        time.sleep(7)
+        driver.find_element_by_xpath('//*[@id="app"]/main/section/div[1]/div/div/div[2]/div[1]/div[2]/div/div/div').click()
+        driver.find_element_by_xpath('//*[@id="chat-toggle-button"]').click()
+        chatbox = driver.find_element_by_id("message-input")
+        # chatbox.send_keys(wish)
+        chatbox.send_keys(wish)
+        chatbox.send_keys(Keys.RETURN)
+    except Exception as e:
+        print("Teacher not wished:-(")
+
 def get_time(timest):
     #eg->9:00 AM - 10:00 AM
     timest=timest.split(" -") 
@@ -84,28 +139,6 @@ def jot(final_time):
         print('You have '+str(-diff)+' m to start the class.')
         return diff
 
-def poll():
-    try:
-        try:
-            frame = WebDriverWait(driver,1).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="frame"]')))
-            driver.switch_to.frame(frame)
-        except Exception as e: 
-            print("-",end="")
-        time.sleep(1)
-        try:
-            driver.find_element_by_xpath("//*[@id='app']/main/div[2]/div/div[2]/div[1]/button").click()
-        except:
-            driver.find_element_by_xpath("//*[@id='app']/main/div[1]/div/div[2]/div[1]/button").click()
-        print(" :)Polled!")
-    except Exception as e:
-        print(".",end="")
-        
-    # #poll options
-    # #     '''//*[@id="app"]/main/div[2]/div/div[2]/div[1]/button'''
-    # #1 out of 3optn
-    # '''//*[@id="app"]/main/div[2]/div/div[2]/div[1]/button'''
-    # #3 out of 3
-    # '''//*[@id="app"]/main/div[2]/div/div[2]/div[3]/button'''
 
 def join_audio():
     try:
@@ -117,159 +150,90 @@ def join_audio():
         print("No Audio Mode")
     print("Audio Mode Selected")
 
-def get_details():
-    global usrnm
-    global pswd
-    global captcha
-    root.withdraw()
-    if os.path.isfile('login_up.txt'):
-        f=open('login_up.txt','r')
-        usrnm=f.readline()
-        pswd=f.readline()
-    else:
-        f=open('login_up.txt','w')
-        usrnm=simpledialog.askstring(title="Username",prompt="Enter the Username here:")
-        f.write("u-"+usrnm+"\n")
-        pswd=simpledialog.askstring(title="Password",prompt="Enter the Password here:")
-        f.write("p-"+pswd)
-        f.close()
-        f=open('login_up.txt','r')
-        usrnm=f.readline()
-        pswd=f.readline()
-        f.close()
-    captcha=simpledialog.askstring(title="Captcha",prompt="Enter the captcha here:")
+
+def site_login():
+    driver.get("https://myclass.lpu.in/")
+    get_details()
+    driver.find_element_by_xpath('/html/body/div[2]/div/form/div[6]/input[1]').send_keys(usrnm)
+    driver.find_element_by_xpath('/html/body/div[2]/div/form/div[6]/input[2]').send_keys(pswd)
+    driver.find_element_by_xpath('/html/body/div[2]/div/form/div[7]/button').click()
+    driver.find_element_by_xpath('//*[@id="homeCenterDiv"]/div/div[1]/div/div[2]/a').click()
+# //*[@id="homeCenterDiv"]/div/div[1]/div/div[2]/a
+    time.sleep(5)
     
-    usrnm=usrnm[2:10]
-    pswd=pswd[2:]
-    captcha=captcha
-    return usrnm,pswd,captcha
+    a=[]
+    links=[]
+    b=[]
+    clstime=[]
+    count=0
+    a=driver.find_elements_by_css_selector(".fc-time-grid-event.fc-event.fc-start.fc-end")
+    for i in range (len(a)):
+        app=str(i+1)
+        b.append(driver.find_element_by_xpath('//*[@id="calendar"]/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[2]/div/div[2]/a['+app+']/div/div[1]'))
+    for i in a:
+        links.append(i.get_attribute("href"))
+        count+=1
+    for i in b:
+        print(i.get_attribute("data-full"))
+        clstime.append(get_time(i.get_attribute("data-full")))
+        # final_time=i.get_attribute("data-full")
+        # print(final_time)
+        # # final_time=get_time(final_time)
+        # clstime.append(i.get_attribute(i.get_attribute("data-full")))
+
+    print(a)
+    print(links)
+    print(clstime)
+
+    wincnt=1
 
 
-def wishTeacher():
-    now = datetime.datetime.now()
-    if(now.hour<12):
-        wish="Good Morning"
-    elif(now.hour>=12 and now.hour<=16):
-        wish="Good Afternoon"
-    else:
-        wish="Good Evening"
 
-    try:
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'/html/body/div/main/section/div/header/div/div[1]/div[1]/button')))
-        time.sleep(7)
-        driver.find_element_by_xpath("/html/body/div/main/section/div/header/div/div[1]/div[1]/button").click()
-        driver.find_element_by_xpath('//*[@id="chat-toggle-button"]').click()
-        chatbox = driver.find_element_by_id("message-input")
-        # chatbox.send_keys(wish)
-        chatbox.send_keys(wish)
-        chatbox.send_keys(Keys.RETURN)
-    except Exception as e:
-        print("Teacher not wished:(")
+    #time wise attendence
+    # for prd in clstime:
+    #     if jot(prd)==1:
+    #         driver.get(links[clscount])
+    #     elif jot(prd)==0:
+    #         print('classdone')
+    #     else:
+    #         time.sleep(jot(-prd*60))
+    #     clscount=clscount+1
 
-def run():
-    driver.maximize_window()
-    def site_login():
-        driver.get("https://ums.lpu.in/myclass/")
-        driver.get("https://ums.lpu.in/myclass/")
+    for j in links:
         try:
-            try:
-                rcnt = open("D:/captcha/count.txt", "r")
-                cnt=int(rcnt.read())
-                rcnt.close()
-                cnt+=1
-                acnt=open("D:/captcha/count.txt", "w")
-                acnt.write(str(cnt))
-                acnt.close()
-                rcnt = open("D:/captcha/count.txt", "r")
-                print(rcnt.read())
-                rcnt.close()
-            except:
-                print('count not done')
-            capimg=driver.find_element_by_xpath('//*[@id="c_default_maincontent_examplecaptcha_CaptchaImage"]')
-            src=capimg.get_attribute('src')
-            print(cnt,type(cnt))
-            nwcnt=str(cnt)
-            urllib.request.urlretrieve(src,"D:/captcha/"+nwcnt+".png")
+            jot(clstime[wincnt-1])
         except:
-            print('cp not saved')
-        get_details()
-        driver.find_element_by_id("txtUserName").send_keys(usrnm)
-        driver.find_element_by_id ("txtPassword").send_keys(pswd)
-        driver.find_element_by_id("CaptchaCodeTextBox").send_keys(captcha)
-        driver.find_element_by_id("MainContent_btnSubmit").click()
+            print('jot//no')
+        driver.get(j)
         time.sleep(1)
-        driver.find_element_by_link_text("View Classes/Meetings").click()
-        time.sleep(1)
-        ################now--->
-        a=[]
-        links=[]
-        b=[]
-        clstime=[]
-        count=0
-        a=driver.find_elements_by_css_selector(".fc-time-grid-event.fc-event.fc-start.fc-end")
-        for i in range (len(a)):
-            app=str(i+1)
-            b.append(driver.find_element_by_xpath('//*[@id="calendar"]/div[2]/div/table/tbody/tr/td/div/div/div[3]/table/tbody/tr/td[2]/div/div[2]/a['+app+']/div/div[1]'))
-        for i in a:
-            links.append(i.get_attribute("href"))
-            count+=1
-        for i in b:
-            print(i.get_attribute("data-full"))
-            clstime.append(get_time(i.get_attribute("data-full")))
-            # final_time=i.get_attribute("data-full")
-            # print(final_time)
-            # # final_time=get_time(final_time)
-            # clstime.append(i.get_attribute(i.get_attribute("data-full")))
-        
-        print(a)
-        print(links)
-        print(clstime)
-
-        wincnt=1
+        try:
+            driver.find_element_by_css_selector(".btn.btn-primary.btn-block.btn-sm").click()
+            flag=True
+        except Exception as e:
+            print("Join btn not found A.K.A #SEDLYF #STRUGGLEISREAL")
+            flag=False
+        if flag:
+            join_audio()
+            wishTeacher()
+            time.sleep(5)
+            for k in range(11):
+                # try:
+                #     driver.find_element_by_id("message-input").send_keys("Okay")
+                #     driver.find_element_by_id("message-input").send_keys(Keys.RETURN)
+                # except Exception as e:
+                #     print("Msg box and ok btn not found")
+                #     break
+                for l in range(300):
+                    time.sleep(1)
+                    poll()
+                    
+        print("\n----------------#---------------------#------------------#-----------------------")  
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[wincnt])
+        wincnt+=1
+site_login()
 
 
 
-        #time wise attendence
-        # for prd in clstime:
-        #     if jot(prd)==1:
-        #         driver.get(links[clscount])
-        #     elif jot(prd)==0:
-        #         print('classdone')
-        #     else:
-        #         time.sleep(jot(-prd*60))
-        #     clscount=clscount+1
 
-        for j in links:
-            try:
-                jot(clstime[wincnt-1])
-            except:
-                print('jot//no')
-            driver.get(j)
-            time.sleep(1)
-            try:
-                driver.find_element_by_css_selector(".btn.btn-primary.btn-block.btn-sm").click()
-                flag=True
-            except Exception as e:
-                print("Join btn not found")
-                flag=False
-            if flag:
-                join_audio()
-                wishTeacher()
-                time.sleep(5)
-                for k in range(11):
-                    # try:
-                    #     driver.find_element_by_id("message-input").send_keys("Okay")
-                    #     driver.find_element_by_id("message-input").send_keys(Keys.RETURN)
-                    # except Exception as e:
-                    #     print("Msg box and ok btn not found")
-                    #     break
-                    for l in range(300):
-                        time.sleep(1)
-                        poll()
-                        
-            print("\n----------------#---------------------#------------------#-----------------------")  
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[wincnt])
-            wincnt+=1
-    site_login()
-run()
+
