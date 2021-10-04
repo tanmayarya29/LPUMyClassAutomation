@@ -70,13 +70,14 @@ def poll():
             driver.find_element_by_xpath('//*[@id="app"]/main/div[2]/div/span/div[2]/div[1]/button').click()
             print(" :)Polled!")
         except:
-            print("Not Polled :-<")
+            print("-",end="")
 
     except Exception as e:
         print(".",end="")
 
 def wishTeacher():
-    now = datetime.datetime.now() 
+    now = datetime.datetime.now()
+    wiish=""
     if(now.minute <= 10):
         if(now.hour<12):
             wish="Good Morning"
@@ -86,9 +87,9 @@ def wishTeacher():
             wish="Good Evening"
 
     try:
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'//*[@id="tippy-10"]')))
+        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,'//*[@id="app"]/main/section/div/header/div/div[1]/div[1]/button')))
         time.sleep(7)
-        driver.find_element_by_xpath('//*[@id="app"]/main/section/div[1]/div/div/div[2]/div[1]/div[2]/div/div/div').click()
+        driver.find_element_by_xpath('//*[@id="app"]/main/section/div/header/div/div[1]/div[1]/button').click()
         driver.find_element_by_xpath('//*[@id="chat-toggle-button"]').click()
         chatbox = driver.find_element_by_id("message-input")
         # chatbox.send_keys(wish)
@@ -181,9 +182,9 @@ def site_login():
         # # final_time=get_time(final_time)
         # clstime.append(i.get_attribute(i.get_attribute("data-full")))
 
-    print(a)
-    print(links)
-    print(clstime)
+    # print(a)
+    # print(links)
+    # print(clstime)
 
     wincnt=1
 
